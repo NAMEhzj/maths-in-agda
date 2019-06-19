@@ -1,7 +1,0 @@
---library=maths
-
-open import Algebra.Group.Group
-open import Base.Sets
-import Algebra.Group.Subgroup as Subgroup
-
-module SubgroupProps {l k} (G : Set l) (G' : Group G) (H : 𝒫 G) (H' : (Subgroup G G').Subgroup) where 
