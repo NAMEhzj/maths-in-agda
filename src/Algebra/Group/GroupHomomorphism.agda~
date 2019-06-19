@@ -1,0 +1,58 @@
+--library=maths
+
+open import Base.Equivalence 
+open import Algebra.Group.Group
+open import Agda.Primitive
+open import Base.Sets
+open import Base.PropTruncation
+
+module Algebra.Group.GroupHomomorphism {l m} (G : Set l) (H : Set m) (G' : Group G) (H' : Group H) where
+
+import Algebra.Group.GroupProps1 G G' as GP
+import Algebra.Group.GroupProps1 H H' as HP
+
+_∙_ = Group._∘_ G'
+e₁ = Group.e G'
+_⁻¹₁ = Group._⁻¹ G'
+
+infix 10 _⁻¹₁
+
+
+_*_ = Group._∘_ H'
+e₂ = Group.e H'
+_⁻¹₂ = Group._⁻¹ H'
+
+
+infix 10 _⁻¹₂
+
+
+GroupHom : (G → H) → Set (l ⊔ m)
+GroupHom φ = (a b : G) → φ (a ∙ b) ≡ φ a * φ b        
+
+hom-neut-cong : (φ : G → H) → GroupHom φ → φ e₁ ≡ e₂
+hom-neut-cong φ homφ = HP.LNeut-unique (φ e₁) (φ e₁)
+                       ((φ e₁) * (φ e₁) =⟨ =sym (homφ e₁ e₁) ⟩
+                        φ (e₁ ∙ e₁)     =⟨ Group.LNeut G' e₁ under φ  ⟩
+                        φ e₁ □= )
+
+hom-inv-cong : (φ : G → H) → GroupHom φ → (a : G) → φ (a ⁻¹₁) ≡ (φ a) ⁻¹₂
+hom-inv-cong φ homφ a = HP.LInv-unique (φ (a ⁻¹₁)) (φ a)
+                        ((φ (a ⁻¹₁)) * (φ a) =⟨ =sym (homφ (a ⁻¹₁) a) ⟩
+                         φ ((a ⁻¹₁) ∙ a)     =⟨ Group.LInv G' a under φ ⟩
+                         φ e₁                =⟨ hom-neut-cong φ homφ ⟩
+                         e₂ □= )
+
+import Algebra.Group.Subgroup G G' as SG
+
+open 𝒫
+
+
+kernel : (φ : G → H) → 𝒫 G
+U (kernel φ)              = Σ G (λ a → ∥ φ a ≡ e₂ ∥)
+i (kernel φ)      (a , _) = a 
+injective (kernel φ) (a , eq₁) (b , eq₂) a=b with eq₁
+...                 | eq₁' rewrite a=b = Σ-≡-intro (refl , isTrunc eq₁' eq₂)
+
+
+kernel-subgroup : (φ : G → H) → (GroupHom φ) → SG.Subgroup (kernel φ)
+kernel-subgroup = {!!}
