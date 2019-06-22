@@ -29,34 +29,34 @@ record closedProp {m} (P : (x : G) → Set m) : Set (l ⊔ m) where
 open Subgroup
 
 propSubgroup : ∀{m} (P : (a : G) → Set m) → closedProp P → Subgroup (propSubset P)
-e∈U (propSubgroup P closed) = (e , ∣ closedProp.Pe closed ∣) , refl
-∘-closed (propSubgroup P closed) x y ((.x , ∣Px∣) , refl)  ((.y , ∣Py∣) , refl) = ((x ∘ y , liftToTrunc2* prf ∣Px∣ ∣Py∣) , refl)
-                                                               where prf : P x → P y → ∥ P (x ∘ y) ∥
-                                                                     prf Px Py = ∣ closedProp.∘-closed closed x y Px Py ∣ 
-inv-closed (propSubgroup P closed) x ((.x , ∣Px∣) , refl) = ((x ⁻¹ , liftToTrunc* prf ∣Px∣) , refl)
-                                                               where prf : P x → ∥ P (x ⁻¹) ∥
-                                                                     prf Px = ∣ closedProp.inv-closed closed x Px ∣
+e∈U (propSubgroup P closed) = ∣ closedProp.Pe closed ∣
+∘-closed (propSubgroup P closed) x y ∣Px∣ ∣Py∣ = liftToTrunc2* prf ∣Px∣ ∣Py∣
+                                                    where prf : P x → P y → ∥ P (x ∘ y) ∥
+                                                          prf Px Py = ∣ closedProp.∘-closed closed x y Px Py ∣ 
+inv-closed (propSubgroup P closed) x ∣Px∣ = liftToTrunc* prf ∣Px∣
+                                                    where prf : P x → ∥ P (x ⁻¹) ∥
+                                                          prf Px = ∣ closedProp.inv-closed closed x Px ∣
 
 
 open Base.Sets.𝒫
 
 neutSubset : 𝒫 G
-U neutSubset = ⊤
-i neutSubset tt = e
-injective neutSubset tt tt _ = refl
+elem neutSubset x = x ≡ e
+unique neutSubset x p1 p2 = axiom-k
 
 open import Algebra.Group.GroupProps1 G G'
 
+
 neutSubgroup : Subgroup neutSubset
-e∈U neutSubgroup = tt , refl
-∘-closed neutSubgroup a b (tt , refl)  (tt , refl) = tt , =sym (Group.LNeut G' e) 
-inv-closed neutSubgroup a (tt , refl) = tt , =sym neutInv
+e∈U neutSubgroup = refl
+∘-closed neutSubgroup a b refl refl = Group.LNeut G' e 
+inv-closed neutSubgroup a refl = neutInv
 
 
 wholeGroup : Subgroup (wholeSet G)
-e∈U wholeGroup = e , refl 
-∘-closed wholeGroup a b _ _ = a ∘ b , refl
-inv-closed wholeGroup a _ = a ⁻¹ , refl
+e∈U wholeGroup = tt 
+∘-closed wholeGroup a b _ _ = tt
+inv-closed wholeGroup a _ = tt
 
 
 

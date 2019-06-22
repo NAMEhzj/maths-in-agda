@@ -5,6 +5,7 @@ open import Relation.Binary.Core
 open import Data.Product
 open import Function
 open import Data.Nat using (ℕ)
+open import Data.Fin using (Fin ; zero ; suc)
 open import Level using ( _⊔_ ) renaming (suc to lsuc)
 
 --from maths
@@ -58,6 +59,8 @@ liftToFactor2 {A = A} {_≈_} {eqr} {B} f f-cong = liftToFactor f1 f1-cong
                                                                          f y                =⟨ =sym (lift-cong (f y) (f-congVar1 y)) ⟩
                                                                          (f1 y) ∘ factormap □= )
 
+
+
 lift2-cong :  ∀{a b r} → {A : Set a} → {_≈_ : Rel A r} → {eqr : IsEquivalence _≈_} → {B : Set b} → (f : A → A → B)
                  → (f-cong : (x y v w : A) → x ≈ y → v ≈ w → f x v ≡ f y w) → (x v : A) → liftToFactor2 {eqr = eqr} f f-cong (factormap x) (factormap v) ≡ f x v
 lift2-cong {A = A} {_≈_} {eqr} {B} f f-cong x v = f*  x* v*  =⟨ refl ⟩
@@ -80,6 +83,39 @@ lift2-cong {A = A} {_≈_} {eqr} {B} f f-cong x v = f*  x* v*  =⟨ refl ⟩
                            x* = factormap {eqr = eqr} x
                            v* = factormap {eqr = eqr} v
 
+
+open Relation.Binary.Core.IsEquivalence renaming (refl to refl')
+
+
+
+{-
+prodRel : ∀{k l} → {n : ℕ} → (As : Fin n → Set k) → (Rs : (i : Fin n) → Rel (As i) l) → Rel ((i : Fin n) → As i) l
+prodRel {n = n} As Rs f g = (i : Fin n) → Rs i (f i) (g i)
+
+prodEqr :  ∀{k l} → {n : ℕ} → (As : Fin n → Set k) → (Rs : (i : Fin n) → Rel (As i) l) →
+           (Eqrs : (i : Fin n) → IsEquivalence (Rs i)) → IsEquivalence (prodRel As Rs)
+refl' (prodEqr As Rs Eqrs) i = refl' (Eqrs i)
+sym (prodEqr As Rs Eqrs) pf i = sym (Eqrs i) (pf i)
+trans (prodEqr As Rs Eqrs) pf1 pf2 i = trans (Eqrs i) (pf1 i) (pf2 i)
+
+
+liftToFactor2' : ∀{a b r} → {A : Set a} → {_≈_ : Rel A r} → {eqr : IsEquivalence _≈_} → {B : Set b}
+                    → (f : A → A → B) → ((x y v w : A) → x ≈ y → v ≈ w → f x v ≡ f y w) → factorize A _≈_ eqr → factorize A _≈_ eqr → B
+liftToFactor2' {a} {b} {r} {A} {_≈_} {eqr} {B} f f-cong x y = liftToFactor f2 f2-cong {!!}
+                                            where AA : Fin 2 → Set a
+                                                  AA _ = A
+                                                  R2 = prodRel AA (λ _ → _≈_)
+                                                  eqr2 = prodEqr AA (λ _ → _≈_) (λ i → eqr)
+                                                  f2 : ((i : Fin 2) → AA i) → B
+                                                  f2 vw = f (vw zero) (vw (suc zero))
+                                                  f2-cong : (uv wz : (i : Fin 2) → AA i) → (R2 uv wz) → f2 uv ≡ f2 wz
+                                                  f2-cong uv wz Ruvwz = f-cong (uv zero) (wz zero) (uv (suc zero)) (wz (suc zero))
+                                                                        (Ruvwz zero) (Ruvwz (suc zero))
+                                                  xy : ((i : Fin 2) → AA i)
+                                                  xy zero       = x
+                                                  xy (suc zero) = y
+                                                                   
+-}
 
 -- the same functions as liftToFactor and lift-cong, instead of a constant set C, the target set can depend on the input, but only up to equivalence.
 -- one should be able to show the existence of these two just from the simple case by setting C = Σ A/≈ B, but i got confused with all the equalities between equality types

@@ -24,9 +24,16 @@ unique (propSubset P) x = isTrunc
 
 
 
-wholeSet : ∀{a} (A : Set a) → 𝒫 A {lzero}
+wholeSet : ∀{l} (A : Set l) → 𝒫 A {lzero}
 elem (wholeSet A) x = ⊤
 unique (wholeSet A) x tt tt = refl
+
+
+
+preimageSubset : ∀{k l m} {A : Set k} {B : Set l} (f : A → B) → 𝒫 B {m} → 𝒫 A {m}
+elem (preimageSubset f S) x = elem S (f x)
+unique (preimageSubset f S) x p1 p2 = unique S (f x) p1 p2
+
 
 
 infix 6 _∈_ 

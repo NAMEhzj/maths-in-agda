@@ -56,33 +56,37 @@ import Algebra.Group.Subgroup H H' as SH
 open 𝒫
 
 
+preimageSubgroup : ∀{l} (φ : G → H) → GroupHom φ → (S : 𝒫 H {l}) →
+                         SH.Subgroup S → SG.Subgroup (preimageSubset φ S)
+SG.Subgroup.e∈U (preimageSubgroup φ homφ S SisSG) = [ φ e₁ =⟨ hom-neut-cong φ homφ ⟩
+                                                       e₂ □= ]and[ SH.Subgroup.e∈U SisSG ]
+SG.Subgroup.∘-closed (preimageSubgroup φ homφ S SisSG) x y φx∈S φy∈S = [_]and[_] {P = (λ t → t ∈ S)}  φxy=φxφy φxφy∈S
+                                                                          where φxy=φxφy : φ (x ∙ y) ≡ (φ x) * (φ y)
+                                                                                φxy=φxφy = homφ x y
+                                                                                φxφy∈S : (φ x) * (φ y) ∈ S
+                                                                                φxφy∈S = SH.Subgroup.∘-closed SisSG (φ x) (φ y) φx∈S φy∈S
+SG.Subgroup.inv-closed (preimageSubgroup φ homφ S SisSG) x φx∈S = [_]and[_] {P = λ t → t ∈ S}
+                                                                        (φ (x ⁻¹₁) =⟨ hom-inv-cong φ homφ x ⟩
+                                                                         (φ x) ⁻¹₂ □=)
+                                                                        (SH.Subgroup.inv-closed SisSG (φ x) φx∈S)
+
+
+
 kernel : (φ : G → H) → 𝒫 G
-kernel φ = propSubset (λ a → φ a ≡ e₂)
-
-open SG.closedProp
-
-kerClosed : (φ : G → H) → GroupHom φ → SG.closedProp (λ a → φ a ≡ e₂)
-Pe (kerClosed φ homφ) = hom-neut-cong φ homφ
-∘-closed (kerClosed φ homφ) a b φa=e φb=e = φ (a ∙ b) =⟨ homφ a b ⟩
-                                            φ a * φ b =⟨ φa=e under _* φ b ⟩
-                                            e₂ * φ b  =⟨ Group.LNeut H' (φ b) ⟩
-                                            φ b       =⟨ φb=e ⟩
-                                            e₂ □=
-inv-closed (kerClosed φ homφ) a φa=e = φ (a ⁻¹₁) =⟨ hom-inv-cong φ homφ a ⟩
-                                       (φ a) ⁻¹₂ =⟨ φa=e under _⁻¹₂ ⟩
-                                       e₂ ⁻¹₂    =⟨ HP.neutInv ⟩
-                                       e₂ □=
+kernel φ = preimageSubset φ SH.neutSubset 
 
 
+kernelSubgroup : (φ : G → H) → GroupHom φ → SG.Subgroup (kernel φ)
+kernelSubgroup φ homφ = preimageSubgroup φ homφ SH.neutSubset SH.neutSubgroup
 
-kernel-subgroup : (φ : G → H) → GroupHom φ → SG.Subgroup (kernel φ)
-kernel-subgroup φ homφ = SG.propSubgroup (λ a → φ a ≡ e₂) (kerClosed φ homφ)
+
 
 
 image : (φ : G → H) → 𝒫 H
 image φ = propSubset (λ b → Σ G (λ a → φ a ≡ b))
 
 open SH.closedProp
+
 
 imClosed : (φ : G → H) → GroupHom φ → SH.closedProp (λ x → Σ G (λ a → φ a ≡ x))
 Pe (imClosed φ homφ) = e₁ , hom-neut-cong φ homφ
@@ -94,35 +98,35 @@ inv-closed (imClosed φ homφ) x (a , φa=x) = a ⁻¹₁ , (φ (a ⁻¹₁) =�
                                                      (φ a) ⁻¹₂ =⟨ φa=x under _⁻¹₂ ⟩
                                                      x ⁻¹₂ □=)
 
+
 image-subgroup : (φ : G → H) → GroupHom φ → SH.Subgroup (image φ)
 image-subgroup φ homφ = SH.propSubgroup (λ x → Σ G (λ a → φ a ≡ x)) (imClosed φ homφ)
 
 open _⇔_
+
 
 injective-kernel : (φ : G → H) → GroupHom φ → ((a b : G) → φ a ≡ φ b → a ≡ b) ⇔ ((kernel φ) ⊆ SG.neutSubset) 
 from (injective-kernel φ homφ) kerφ⊆e a b φa=φb = a           =⟨ GP.LInv-unique a (b ⁻¹₁) ab⁻¹=e ⟩
                                                   (b ⁻¹₁) ⁻¹₁ =⟨ GP.doubleInv b ⟩
                                                   b □= 
                     where ab⁻¹∈kerφ : a ∙ (b ⁻¹₁) ∈ kernel φ
-                          ab⁻¹∈kerφ = propSubset-to∈ (φ (a ∙ (b ⁻¹₁))   =⟨ homφ a (b ⁻¹₁) ⟩
-                                                    φ a * φ (b ⁻¹₁)   =⟨ hom-inv-cong φ homφ b under (φ a *_) ⟩
-                                                    φ a * ((φ b) ⁻¹₂) =⟨ φa=φb under _* ((φ b) ⁻¹₂) ⟩
-                                                    φ b * ((φ b) ⁻¹₂) =⟨ Group.RInv H' (φ b) ⟩
-                                                    e₂ □=)
+                          ab⁻¹∈kerφ = (φ (a ∙ (b ⁻¹₁))   =⟨ homφ a (b ⁻¹₁) ⟩
+                                       φ a * φ (b ⁻¹₁)   =⟨ hom-inv-cong φ homφ b under (φ a *_) ⟩
+                                       φ a * ((φ b) ⁻¹₂) =⟨ φa=φb under _* ((φ b) ⁻¹₂) ⟩
+                                       φ b * ((φ b) ⁻¹₂) =⟨ Group.RInv H' (φ b) ⟩
+                                       e₂ □=)
                           ab⁻¹=e : a ∙ (b ⁻¹₁) ≡ e₁
-                          ab⁻¹=e with (kerφ⊆e (a ∙ (b ⁻¹₁)) ab⁻¹∈kerφ)
-                          ...             | (tt , pf) = =sym pf
-to (injective-kernel φ homφ) φinj a a∈kerφ =  (tt , φinj e₁ a (φ e₁ =⟨ hom-neut-cong φ homφ ⟩
-                                                               e₂   =⟨ =sym φa=e ⟩
-                                                               φ a □=))
-                        where φa=e : φ a ≡ e₂
-                              φa=e = liftToTrunc (λ x → x) (λ x y → axiom-k) (propSubset-from∈ a∈kerφ)
+                          ab⁻¹=e = kerφ⊆e (a ∙ (b ⁻¹₁)) ab⁻¹∈kerφ
+to (injective-kernel φ homφ) φinj a a∈kerφ = φinj a e₁ (φ a =⟨ a∈kerφ ⟩
+                                                        e₂  =⟨ =sym (hom-neut-cong φ homφ) ⟩
+                                                        φ e₁ □=)
+
 
 
 
 surjective-image : (φ : G → H) → GroupHom φ → ((x : H) → ∥ Σ G (λ a → φ a ≡ x) ∥) ⇔ ((image φ) ⊇ wholeSet H)
-from (surjective-image φ homφ) imφ⊇H x with (imφ⊇H x (x , refl))
-...                                   | ((x , ∣a,φa=x∣) , refl) = ∣a,φa=x∣
-to (surjective-image φ homφ) φsurj x _ = (x , φsurj x)  , refl
+from (surjective-image φ homφ) imφ⊇H x = imφ⊇H x tt
+to (surjective-image φ homφ) φsurj x _ = φsurj x
+
 
 
