@@ -84,6 +84,29 @@ lift2-cong {A = A} {_≈_} {eqr} {B} f f-cong x v = f*  x* v*  =⟨ refl ⟩
                            v* = factormap {eqr = eqr} v
 
 
+
+
+liftToFactor3 : ∀{a b r} → {A : Set a} → {_≈_ : Rel A r} → {eqr : IsEquivalence _≈_} → {B : Set b} → 
+                    (f : A → A → A → B) → ((x x' y y' z z' : A) → x ≈ x' → y ≈ y' → z ≈ z' → f x y z ≡ f x' y' z') →
+                    factorize A _≈_ eqr → factorize A _≈_ eqr → factorize A _≈_ eqr → B
+liftToFactor3 {A = A} {_≈_} {eqr} {B} f f-cong = liftToFactor2 f1 f1-cong
+                      where f-congVar1 : (x y : A) → (z z' : A) → z ≈ z' → f x y z ≡ f x y z'
+                            f-congVar1 x y z z' z≈z' = f-cong x x y y z z' (IsEquivalence.refl eqr) (IsEquivalence.refl eqr) z≈z'
+                            f-congVar2 : (x x' y y' : A) → x ≈ x' → y ≈ y' → (f x y) ≡ (f x' y')
+                            f-congVar2 x x' y y' x≈x' y≈y' = ∀≡ λ z → f-cong x x' y y' z z x≈x' y≈y' (IsEquivalence.refl eqr)
+                            f1 : A → A → factorize A _≈_ eqr → B
+                            f1 x y = liftToFactor (f x y) (f-congVar1 x y)
+                            f1-cong : (x x' y y' : A) → x ≈ x' → y ≈ y' → f1 x y ≡ f1 x' y'
+                            f1-cong x x' y y' x≈x' y≈y' = lift-unique (f1 x y) (f1 x' y')
+                                                            ((f1 x y) ∘ factormap =⟨ lift-cong (f x y) (f-congVar1 x y) ⟩
+                                                             f x y                =⟨ f-congVar2 x x' y y' x≈x' y≈y' ⟩
+                                                             f x' y'              =⟨ =sym (lift-cong (f x' y') (f-congVar1 x' y')) ⟩
+                                                             (f1 x' y') ∘ factormap □=)
+
+
+
+
+
 open Relation.Binary.Core.IsEquivalence renaming (refl to refl')
 
 

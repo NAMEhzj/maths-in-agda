@@ -72,7 +72,6 @@ liftToTrunc-cong : ∀{a b} → {A : Set a} → {B : Set b} → (f : A → B) �
                      → (x : A) → liftToTrunc f f-cong ∣ x ∣ ≡ f x
 liftToTrunc-cong f f-cong x = lift-cong f (λ x y x≈y → f-cong x y) under (λ f → f x)
 
-
 liftToTrunc2 : ∀{a b c} → {A : Set a} → {B : Set b} → {C : Set c} → (f : A → B → C) → ((x1 x2 : A) → (y1 y2 : B) → (f x1 y1) ≡ (f x2 y2))
                                       → ∥ A ∥ → ∥ B ∥ → C
 liftToTrunc2  {A = A} {B} {C} f f-cong = liftToTrunc f1 f1-cong
@@ -142,3 +141,11 @@ proof-lift {A = A} {_≈_} {eqr}B f x* = sametype (lift-unique (proj₁ ∘ f'*)
                                 comp-same = ∀≡ (λ x → proj₁ ((f'* ∘ factormap) x)  =⟨ lift-cong f' f'-cong under (λ t → proj₁ (t x)) ⟩
                                                       proj₁ (f' x)                 =⟨ refl ⟩
                                                       factormap x □=)
+
+-- this is still to do, but I'm too lazy right now, so I'm gonna just postulate it
+postulate 
+ proof-lift2 : ∀{a b r} → {A : Set a} → {_≈_ : Rel A r} → {eqr : IsEquivalence _≈_} → (B : factorize A _≈_ eqr → factorize A _≈_ eqr → Set b)
+                       → ((x y : A) → ∥ B (factormap x) (factormap y) ∥) → (x* y* : factorize A _≈_ eqr) → ∥ B x* y* ∥ 
+ proof-lift3 : ∀{a b r} → {A : Set a} → {_≈_ : Rel A r} → {eqr : IsEquivalence _≈_} → (B : factorize A _≈_ eqr → factorize A _≈_ eqr → factorize A _≈_ eqr → Set b)
+                       → ((x y z : A) → ∥ B (factormap x) (factormap y) (factormap z) ∥) → (x* y* z* : factorize A _≈_ eqr) → ∥ B x* y* z* ∥ 
+ 

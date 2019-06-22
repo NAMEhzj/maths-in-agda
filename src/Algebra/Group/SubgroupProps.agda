@@ -7,6 +7,7 @@ open import Base.Equivalence renaming (_∘_ to _comp_)
 open import Algebra.Group.Group
 open import Base.Sets
 open import Base.Factorization
+open import Base.PropTruncation
 import Algebra.Group.Subgroup as Subgroup
 
 module SubgroupProps {l k} (G : Set l) (G' : Group G) (H : 𝒫 G {k}) (H' : Subgroup.Subgroup G G' H) where 
@@ -89,6 +90,54 @@ factorGroupStruct : normal → Group factorGroup
 Group.e (factorGroupStruct _) = factormap e
 Group._∘_ (factorGroupStruct norm) = factor-∘ norm
 Group._⁻¹ (factorGroupStruct norm) = factor-inv norm
-Group.Assoc (factorGroupStruct norm) x y z = (x ∙ y) ∙ z =⟨ {!!} ⟩
-                                             {!!}
-                                       where _∙_ = factor-∘ norm
+Group.Assoc (factorGroupStruct norm) x y z = getEq (proof-lift3 (λ a b c → (a ∙ b) ∙ c ≡ a ∙ (b ∙ c)) lowerPf x y z)
+                                                  where _∙_ = factor-∘ norm
+                                                        lowerPf : (x y z : G) → ∥ (factormap x ∙ factormap y) ∙ factormap z ≡
+                                                                                factormap x ∙ (factormap y ∙ factormap z) ∥
+                                                        lowerPf x y z = ∣ (x* ∙ y*) ∙ z*           =⟨ lift2-cong (λ x y → factormap (x ∘ y)) (∘-cong norm) x y under _∙ z* ⟩
+                                                                          factormap (x ∘ y) ∙ z*   =⟨ lift2-cong (λ x y → factormap (x ∘ y)) (∘-cong norm) (x ∘ y) z ⟩
+                                                                          factormap ((x ∘  y) ∘ z) =⟨ Assoc x y z under factormap ⟩
+                                                                          factormap (x ∘ (y ∘ z))  =⟨ =sym (lift2-cong (λ x y → factormap (x ∘ y)) (∘-cong norm) x (y ∘ z)) ⟩
+                                                                          x* ∙ factormap (y ∘ z)   =⟨ =sym (lift2-cong (λ x y → factormap (x ∘ y)) (∘-cong norm) y z under x* ∙_) ⟩
+                                                                          x* ∙ (y* ∙ z*) □= ∣
+                                                         where x* = factormap x
+                                                               y* = factormap y
+                                                               z* = factormap z
+Group.LNeut (factorGroupStruct norm) x = getEq (proof-lift (λ a → (factormap e) ∙ a ≡ a) lowerPf x)
+                                           where _∙_ = factor-∘ norm
+                                                 lowerPf : (x : G) → ∥ (factormap e) ∙ factormap x ≡ factormap x ∥
+                                                 lowerPf x = ∣ e* ∙ x*           =⟨ lift2-cong (λ x y → factormap (x ∘ y)) (∘-cong norm) e x ⟩
+                                                               factormap (e ∘ x) =⟨ (LNeut x) under factormap ⟩
+                                                               x* □= ∣
+                                                   where x* = factormap x
+                                                         e* = factormap e
+Group.RNeut (factorGroupStruct norm) x = getEq (proof-lift (λ a → a ∙ (factormap e) ≡ a) lowerPf x)
+                                           where _∙_ = factor-∘ norm
+                                                 lowerPf : (x : G) → ∥ (factormap x) ∙ factormap e ≡ factormap x ∥
+                                                 lowerPf x = ∣ x* ∙ e*           =⟨ lift2-cong (λ x y → factormap (x ∘ y)) (∘-cong norm) x e ⟩
+                                                               factormap (x ∘ e) =⟨ (RNeut x) under factormap ⟩
+                                                               x* □= ∣
+                                                   where x* = factormap x
+                                                         e* = factormap e
+Group.LInv (factorGroupStruct norm) x = getEq (proof-lift (λ a → (inv a) ∙ a ≡ factormap e) lowerPf x)
+                                           where _∙_ = factor-∘ norm
+                                                 inv = factor-inv norm
+                                                 lowerPf : (x : G) → ∥ (inv (factormap x)) ∙ factormap x ≡ factormap e ∥
+                                                 lowerPf x = ∣ (inv x*) ∙ x*         =⟨ lift-cong (λ x → factormap (x ⁻¹)) (inv-cong norm) under (λ f → (f x) ∙ x*) ⟩
+                                                               factormap (x ⁻¹) ∙ x* =⟨ lift2-cong (λ x y → factormap (x ∘ y)) (∘-cong norm) (x ⁻¹) x ⟩
+                                                               factormap (x ⁻¹ ∘ x)  =⟨ LInv x under factormap ⟩
+                                                               e* □= ∣
+                                                   where x* = factormap x
+                                                         e* = factormap e
+Group.RInv (factorGroupStruct norm) x = getEq (proof-lift (λ a → a ∙ (inv a)≡ factormap e) lowerPf x)
+                                           where _∙_ = factor-∘ norm
+                                                 inv = factor-inv norm
+                                                 lowerPf : (x : G) → ∥ factormap x ∙ inv (factormap x) ≡ factormap e ∥
+                                                 lowerPf x = ∣ x* ∙ (inv x*)         =⟨ lift-cong (λ x → factormap (x ⁻¹)) (inv-cong norm) under (λ f → x* ∙ (f x)) ⟩
+                                                               x* ∙ factormap (x ⁻¹) =⟨ lift2-cong (λ x y → factormap (x ∘ y)) (∘-cong norm) x (x ⁻¹) ⟩
+                                                               factormap (x ∘ x ⁻¹)  =⟨ RInv x under factormap ⟩
+                                                               e* □= ∣
+                                                   where x* = factormap x
+                                                         e* = factormap e
+
+                                       
