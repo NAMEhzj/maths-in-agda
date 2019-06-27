@@ -4,7 +4,7 @@ open import Agda.Primitive
 open import Relation.Binary.Core
 open import Data.Sum.Base
 open import Relation.Nullary
-open import Algebra.Field.Field renaming (Field to FD)
+open import Algebra.Field.Core renaming (Field to FD)
 open import Algebra.VectorSpace.Core renaming (VectorSpace to VS)
 open import Data.List hiding (sum)
 open import Data.Fin hiding (_+_) renaming (zero to fzero)
@@ -20,7 +20,7 @@ module Algebra.VectorSpace.Subspace {k l} {F : Set k} {F' : FD F} {V : Set l} (V
 
 open import Base.Sets public
 
-import Algebra.Field.FieldProps F' as FP
+import Algebra.Field.Props F' as FP
 open import Algebra.VectorSpace.Props1 V'
 
 open VS V'

@@ -2,12 +2,12 @@
 
 open import Relation.Binary.Core
 open import Relation.Nullary
-open import Algebra.Field.Field
+open import Algebra.Field.Core
 open import Base.Equivalence
 open import Data.Fin renaming (zero to fzero) hiding (_+_)
 open import Data.Nat using (ℕ) 
 
-module Algebra.Field.FieldProps {k} {F : Set k} (F' : Field F) where
+module Algebra.Field.Props {k} {F : Set k} (F' : Field F) where
 
 infixr 5 _+_
 infixr 6 _*_

@@ -1,6 +1,6 @@
 --library=maths
 
-open import Algebra.Field.Field
+open import Algebra.Field.Core
 open import Base.Equivalence
 open import Relation.Binary.Core
 open import Agda.Primitive
@@ -9,7 +9,7 @@ open import Data.Product
 open import Data.Empty
 open import Data.Nat using (ℕ) renaming (_≤_ to _≤ℕ_)
 
-import Algebra.Field.FieldProps as FP
+import Algebra.Field.Props as FP
 
 
 module RealNumbers where

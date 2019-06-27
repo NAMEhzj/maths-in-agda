@@ -4,7 +4,7 @@ open import Agda.Primitive
 open import Relation.Binary.Core
 open import Data.Sum.Base
 open import Relation.Nullary
-open import Algebra.Field.Field renaming (Field to FD)
+open import Algebra.Field.Core renaming (Field to FD)
 open import Algebra.VectorSpace.Core renaming (VectorSpace to VS)
 open import Data.List hiding (sum)
 open import Data.Fin hiding (_+_) renaming (zero to fzero)
@@ -17,7 +17,7 @@ open import NatAndFin
 
 module Algebra.VectorSpace.Homomorphism {k l₁ l₂} {F : Set k} {F' : FD F} {V : Set l₁} {W : Set l₂} (V' : VS F' V) (W' : VS F' W) where
 
-import Algebra.Field.FieldProps F' as FP
+import Algebra.Field.Props F' as FP
 import Algebra.VectorSpace.Props2 V' as VP
 import Algebra.VectorSpace.Props2 W' as WP
 import Algebra.VectorSpace.Subspace V' as SV

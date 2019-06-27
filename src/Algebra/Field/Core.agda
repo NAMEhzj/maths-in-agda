@@ -4,7 +4,7 @@ open import Relation.Binary.Core
 open import Relation.Nullary
 open import Data.Sum
 
-module Algebra.Field.Field where
+module Algebra.Field.Core where
 
 
 

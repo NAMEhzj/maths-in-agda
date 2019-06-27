@@ -1,7 +1,7 @@
 --library=maths
 
 open import Relation.Binary.Core
-open import Algebra.Field.Field
+open import Algebra.Field.Core
 open import Agda.Primitive
 open import Relation.Nullary
 open import Data.List
