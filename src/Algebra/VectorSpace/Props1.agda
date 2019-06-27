@@ -5,7 +5,7 @@ open import Relation.Binary.Core
 open import Data.Sum.Base
 open import Relation.Nullary
 open import Algebra.Field.Field renaming (Field to FD)
-open import Algebra.VectorSpace.VectorSpace renaming (VectorSpace to VS)
+open import Algebra.VectorSpace.Core renaming (VectorSpace to VS)
 open import Data.List hiding (sum)
 open import Data.Fin hiding (_+_) renaming (zero to fzero)
 open import Data.Product hiding (map)
@@ -16,7 +16,7 @@ open import Base.PropTruncation
 open import NatAndFin
 
 
-module Algebra.VectorSpace.VSpaceProps {k l} {F : Set k} {F' : FD F} {V : Set l} (V' : VS F' V) where
+module Algebra.VectorSpace.Props1 {k l} {F : Set k} {F' : FD F} {V : Set l} (V' : VS F' V) where
 
 
 import Algebra.Field.FieldProps F' as FP
@@ -164,7 +164,7 @@ remove-linIndep-cong {n} vs livs αs Σαsvs'=0 i = βs=0 (suc i)
                                                              zvect □=)
 
 
-
+{-
 record Subspace {m} : Set (k ⊔ l ⊔ (lsuc m)) where
         coinductive
         field
@@ -379,7 +379,7 @@ generator-include {ls₁} {ls₂} {n} {U₁} {U₂} bs bsGenU₁ bs∈U₂ v (x 
                                                                     αsbs∈U i = subspace-scale-cong U₂ (bs i) (αs i) (bs∈U₂ i)
                                                                     
                                                                     
-                                                      
+                                                   
 
 pointChangeF : {n : ℕ} → (Fin n → F) → (F → F) → Fin n → Fin n → F
 pointChangeF αs f i j with (i ≟ j)
@@ -1074,3 +1074,4 @@ symmetric : (V → V → F) → Set (k ⊔ l)
 symmetric q = (v w : V) →  q v w ≡ q w v
 
 
+-}

@@ -29,12 +29,14 @@ elem (wholeSet A) x = ⊤
 unique (wholeSet A) x tt tt = refl
 
 
+preimage : ∀{k l m} {A : Set k} {B : Set l} (f : A → B) → 𝒫 B {m} → 𝒫 A {m}
+elem (preimage f S) x = elem S (f x)
+unique (preimage f S) x p1 p2 = unique S (f x) p1 p2
 
-preimageSubset : ∀{k l m} {A : Set k} {B : Set l} (f : A → B) → 𝒫 B {m} → 𝒫 A {m}
-elem (preimageSubset f S) x = elem S (f x)
-unique (preimageSubset f S) x p1 p2 = unique S (f x) p1 p2
 
-
+singleton : ∀{k} {A : Set k} → A → 𝒫 A
+elem (singleton a) x = x ≡ a
+unique (singleton a) x p1 p2 = axiom-k 
 
 infix 6 _∈_ 
 
@@ -68,3 +70,8 @@ _⋍⟨_⟩_ _ (U₁⊆U₂ , U₁⊇U₂) (U₂⊆U₃ , U₂⊇U₃) = (λ x x
 
 
 
+image : ∀{k l m} {A : Set k} {B : Set l} (f : A → B) → 𝒫 A {m} → 𝒫 B {k ⊔ l ⊔ m}
+image {A = A} {B} f S = propSubset λ y → Σ A (λ x → (x ∈ S) × (f x ≡ y))
+
+wholeImage : ∀{k l} {A : Set k} {B : Set l} (f : A → B) → 𝒫 B {k ⊔ l}
+wholeImage {A = A} {B} f = propSubset λ y → Σ A (λ x → f x ≡ y)

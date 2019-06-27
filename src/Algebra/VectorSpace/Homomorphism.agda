@@ -5,7 +5,7 @@ open import Relation.Binary.Core
 open import Data.Sum.Base
 open import Relation.Nullary
 open import Algebra.Field.Field renaming (Field to FD)
-open import Algebra.VectorSpace.VectorSpace renaming (VectorSpace to VS)
+open import Algebra.VectorSpace.Core renaming (VectorSpace to VS)
 open import Data.List hiding (sum)
 open import Data.Fin hiding (_+_) renaming (zero to fzero)
 open import Data.Product hiding (map)
@@ -15,11 +15,13 @@ open import Data.Empty
 open import Base.PropTruncation
 open import NatAndFin
 
-module Algebra.VectorSpace.VSpaceProps2 {k l₁ l₂} {F : Set k} {F' : FD F} {V : Set l₁} {W : Set l₂} (V' : VS F' V) (W' : VS F' W) where
+module Algebra.VectorSpace.Homomorphism {k l₁ l₂} {F : Set k} {F' : FD F} {V : Set l₁} {W : Set l₂} (V' : VS F' V) (W' : VS F' W) where
 
 import Algebra.Field.FieldProps F' as FP
-import Algebra.VectorSpace.VSpaceProps V' as VP
-import Algebra.VectorSpace.VSpaceProps W' as WP
+import Algebra.VectorSpace.Props2 V' as VP
+import Algebra.VectorSpace.Props2 W' as WP
+import Algebra.VectorSpace.Subspace V' as SV
+import Algebra.VectorSpace.Subspace W' as SW
 
 
 _+'_ = FD._+_ F'
@@ -59,66 +61,59 @@ record Homom (φ : V → W) : Set (k ⊔ l₁ ⊔ l₂) where
           scaleCong : (v : V) → (α : F) → φ (α ∙ v) ≡ α ∘ φ v
 
 
-module HomomProps (φ : V → W) (φ' : Homom φ) where
+homSum : {φ : V → W} → (φ' : Homom φ) → (u v : V) → φ (u + v) ≡ φ u ⊹ φ v
+homSum φ' = Homom.sumCong φ'
+homScale : {φ : V → W} → (φ' : Homom φ) → (v : V) → (α : F) → φ (α ∙ v) ≡ α ∘ φ v
+homScale φ' = Homom.scaleCong φ'
 
 
-  sum-cong = Homom.sumCong φ'
-  scale-cong = Homom.scaleCong φ'
+zero-image : (φ : V → W) → (φ' : Homom φ) → φ zvectV ≡ zvectW
+zero-image φ φ' = φ zvectV          =⟨ =sym (VP.zero-scale zvectV) under φ ⟩
+                  φ (zero ∙ zvectV) =⟨ Homom.scaleCong φ' zvectV zero ⟩
+                  zero ∘ φ zvectV   =⟨ WP.zero-scale (φ zvectV) ⟩
+                  zvectW □=
 
 
-  zero-image : φ zvectV ≡ zvectW
-  zero-image = φ zvectV          =⟨ =sym (VP.zero-scale zvectV) under φ ⟩
-             φ (zero ∙ zvectV) =⟨ Homom.scaleCong φ' zvectV zero ⟩
-             zero ∘ φ zvectV   =⟨ WP.zero-scale (φ zvectV) ⟩
-             zvectW □=
+neg-cong : (φ : V → W) → (φ' : Homom φ) → (v : V) → φ (negV v) ≡ negW (φ v)
+neg-cong φ φ' v = φ (negV v)       =⟨ =sym (VP.negOne-scale v) under φ ⟩
+                  φ ((-' one) ∙ v) =⟨ homScale φ' v (-' one) ⟩
+                  (-' one) ∘ φ v   =⟨ WP.negOne-scale (φ v) ⟩
+                  negW (φ v) □=
 
 
-  neg-cong : (v : V) → φ (negV v) ≡ negW (φ v)
-  neg-cong v = φ (negV v)       =⟨ =sym (VP.negOne-scale v) under φ ⟩
-               φ ((-' one) ∙ v) =⟨ scale-cong v (-' one) ⟩
-               (-' one) ∘ φ v   =⟨ WP.negOne-scale (φ v) ⟩
-               negW (φ v) □=
-  
-  bigSum-cong : {n : ℕ} (vs : Fin n → V) → φ (VP.sum vs) ≡ WP.sum (λ i → φ (vs i)) 
-  bigSum-cong {ℕ.zero} vs = zero-image
-  bigSum-cong {ℕ.suc n} vs = φ ((vs fzero) + VP.sum (λ i → (vs (suc i))))    =⟨ sum-cong (vs fzero) (VP.sum (λ i → (vs (suc i)))) ⟩
-                             φ (vs fzero) ⊹ φ (VP.sum (λ i → (vs (suc i))))  =⟨ bigSum-cong (λ i → vs (suc i)) under (φ (vs fzero) ⊹_) ⟩
-                             φ (vs fzero) ⊹ WP.sum (λ i → (φ (vs (suc i)))) □=
+homBigSum : (φ : V → W) → (φ' : Homom φ) → {n : ℕ} (vs : Fin n → V) → φ (VP.sum vs) ≡ WP.sum (λ i → φ (vs i)) 
+homBigSum φ φ' {ℕ.zero} vs = zero-image φ φ'
+homBigSum φ φ' {ℕ.suc n} vs = φ ((vs fzero) + VP.sum (λ i → (vs (suc i))))   =⟨ homSum φ' (vs fzero) (VP.sum (λ i → (vs (suc i)))) ⟩
+                              φ (vs fzero) ⊹ φ (VP.sum (λ i → (vs (suc i)))) =⟨ homBigSum φ φ' (λ i → vs (suc i)) under (φ (vs fzero) ⊹_) ⟩
+                              φ (vs fzero) ⊹ WP.sum (λ i → (φ (vs (suc i)))) □=
 
 
-  image : WP.Subspace
-  image = WP.propSubspace (λ w → Σ V (λ v → φ v ≡ w))
-                       (record { P0          = (zvectV , zero-image) ;
+image : (φ : V → W) → Homom φ → SW.Subspace (SV.wholeImage φ)
+image φ φ' = SW.propSubspace (λ w → Σ V (λ v → φ v ≡ w))
+                       (record { P0          = (zvectV , zero-image φ φ') ;
                                  sumClosed   = sumClosed' ;
                                  scaleClosed = scaleClosed' })
                                    where sumClosed' : (w z : W) → Σ V (λ u → φ u ≡ w) → Σ V (λ v → φ v ≡ z) → Σ V (λ u+v → φ u+v ≡ w ⊹ z) 
                                          sumClosed' w z (u , refl) (v , refl) = ( u + v , Homom.sumCong φ' u v )
-                                         scaleClosed' : (α : F) → (w : W) → Σ V (λ v → φ v ≡ w) → Σ V (λ αv → φ αv ≡ α ∘ w)
-                                         scaleClosed' α w (v , refl) = ( α ∙ v , Homom.scaleCong φ' v α )
+                                         scaleClosed' : (w : W) → (α : F) → Σ V (λ v → φ v ≡ w) → Σ V (λ αv → φ αv ≡ α ∘ w)
+                                         scaleClosed' w α (v , refl) = ( α ∙ v , Homom.scaleCong φ' v α )
 
-  kernel : VP.Subspace
-  kernel = VP.propSubspace (λ v → φ v ≡ zvectW)
-                      (record { P0          = zero-image ;
-                                sumClosed   = λ u v φu=0 φv=0 → φ (u + v)       =⟨ Homom.sumCong φ' u v ⟩
-                                                                   φ u ⊹ φ v    =⟨ φu=0 under _⊹ φ v ⟩
-                                                                   zvectW ⊹ φ v =⟨ VS.zeroLNeut W' (φ v) ⟩
-                                                                   φ v          =⟨ φv=0 ⟩
-                                                                   zvectW □= ;
-                                scaleClosed = λ α v φv=0 → φ (α ∙ v)  =⟨ Homom.scaleCong φ' v α ⟩
-                                                           α ∘ φ v    =⟨ φv=0 under α ∘_ ⟩
-                                                           α ∘ zvectW =⟨ WP.scale-zvect α ⟩
-                                                           zvectW □= })
-                                  where sumClosed' : (u v : V) → φ u ≡ zvectW → φ v ≡ zvectW → φ (u + v) ≡ zvectW
-                                        sumClosed' u v φu=0 φv=0 = φ (u + v)    =⟨ Homom.sumCong φ' u v ⟩
-                                                                   φ u ⊹ φ v    =⟨ φu=0 under _⊹ φ v ⟩
-                                                                   zvectW ⊹ φ v =⟨ VS.zeroLNeut W' (φ v) ⟩
-                                                                   φ v          =⟨ φv=0 ⟩
-                                                                   zvectW □=
+kernel : (φ : V → W) → Homom φ → SV.Subspace (SV.preimage φ (SW.singleton zvectW))
+SV.Subspace.0∈U (kernel φ φ') = φ zvectV =⟨ zero-image φ φ' ⟩
+                                zvectW □=
+SV.Subspace.sumClosed (kernel φ φ') v w φv=0 φw=0 = φ (v + w)    =⟨ homSum φ' v w ⟩
+                                                    φ v ⊹ φ w    =⟨ φw=0 under φ v ⊹_ ⟩
+                                                    φ v ⊹ zvectW =⟨ VS.zeroRNeut W' (φ v) ⟩
+                                                    φ v          =⟨ φv=0 ⟩
+                                                    zvectW □=
+SV.Subspace.scaleClosed (kernel φ φ') v α φv=0 = φ (α ∙ v)  =⟨ homScale φ' v α ⟩
+                                                 α ∘ (φ v)  =⟨ φv=0 under α ∘_ ⟩
+                                                 α ∘ zvectW =⟨ WP.scale-zvect α ⟩
+                                                 zvectW □=
 
 
 
-
-  {-  
+{-    
   dimensionFormula : {dk di : ℕ} → VP.dimEq dk kernel → WP.dimEq di image → VP.dimEq (dk Data.Nat.+ di) VP.wholeSpace
   dimensionFormula {dk} {di} (vs , (vs∈K , (livs , genvs))) (ws , (ws∈I , (liws , genws))) = (xs , ((λ i → (xs i , refl)) , (lixs , genxs)))
                                 where ws' : Fin di → V

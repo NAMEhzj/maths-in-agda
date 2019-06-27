@@ -7,7 +7,7 @@ open import Relation.Nullary
 open import Data.List
 open import Data.Sum
 
-module Algebra.VectorSpace.VectorSpace where
+module Algebra.VectorSpace.Core where
 
 
 record VectorSpace {a b} {A : Set a} (F : Field A) (V : Set b) : Set (a ⊔ b) where
