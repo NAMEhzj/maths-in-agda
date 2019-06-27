@@ -1,6 +1,6 @@
 --library=maths
 
-open import Algebra.Group.Group
+open import Algebra.Group.Core
 open import Base.Sets
 open import Base.Equivalence hiding (_∘_)
 open import Agda.Primitive
@@ -44,7 +44,7 @@ neutSubset : 𝒫 G
 elem neutSubset x = x ≡ e
 unique neutSubset x p1 p2 = axiom-k
 
-open import Algebra.Group.GroupProps1 G G'
+open import Algebra.Group.Props1 G G'
 
 
 neutSubgroup : Subgroup neutSubset

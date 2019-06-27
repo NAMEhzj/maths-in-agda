@@ -1,9 +1,9 @@
 --library=maths
 
 open import Base.Equivalence hiding (_∘_)
-open import Algebra.Group.Group
+open import Algebra.Group.Core
 
-module Algebra.Group.GroupProps1 {l} (G : Set l) (G' : Group G) where
+module Algebra.Group.Props1 {l} (G : Set l) (G' : Group G) where
 
 open Group G'
 

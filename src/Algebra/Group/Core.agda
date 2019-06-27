@@ -2,7 +2,7 @@
 
 open import Base.Equivalence hiding (_∘_)
 
-module Algebra.Group.Group where
+module Algebra.Group.Core where
 
 record Group {a} (A : Set a) : Set a where
          infixr 8 _∘_

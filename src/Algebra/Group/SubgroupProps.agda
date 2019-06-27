@@ -4,7 +4,7 @@ open import Relation.Binary.Core
 open import Agda.Primitive
 
 open import Base.Equivalence renaming (_∘_ to _comp_)
-open import Algebra.Group.Group
+open import Algebra.Group.Core
 open import Base.Sets
 open import Base.Factorization
 open import Base.PropTruncation
@@ -13,7 +13,7 @@ import Algebra.Group.Subgroup as Subgroup
 module SubgroupProps {l k} (G : Set l) (G' : Group G) (H : 𝒫 G {k}) (H' : Subgroup.Subgroup G G' H) where 
 
 open Group G'
-open import Algebra.Group.GroupProps1 G G'
+open import Algebra.Group.Props1 G G'
 
 
 _~_ : Rel G k

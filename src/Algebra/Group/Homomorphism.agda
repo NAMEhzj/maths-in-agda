@@ -7,13 +7,13 @@ open import Base.Equivalence
 open import Base.PropTruncation
 open import Base.Sets
 
-open import Algebra.Group.Group
+open import Algebra.Group.Core
 
 
-module Algebra.Group.GroupHomomorphism {l m} (G : Set l) (H : Set m) (G' : Group G) (H' : Group H) where
+module Algebra.Group.Homomorphism {l m} (G : Set l) (H : Set m) (G' : Group G) (H' : Group H) where
 
-import Algebra.Group.GroupProps1 G G' as GP
-import Algebra.Group.GroupProps1 H H' as HP
+import Algebra.Group.Props1 G G' as GP
+import Algebra.Group.Props1 H H' as HP
 
 _∙_ = Group._∘_ G'
 e₁ = Group.e G'
@@ -57,7 +57,7 @@ open 𝒫
 
 
 preimageSubgroup : ∀{l} (φ : G → H) → GroupHom φ → (S : 𝒫 H {l}) →
-                         SH.Subgroup S → SG.Subgroup (preimageSubset φ S)
+                         SH.Subgroup S → SG.Subgroup (preimage φ S)
 SG.Subgroup.e∈U (preimageSubgroup φ homφ S SisSG) = [ φ e₁ =⟨ hom-neut-cong φ homφ ⟩
                                                        e₂ □= ]and[ SH.Subgroup.e∈U SisSG ]
 SG.Subgroup.∘-closed (preimageSubgroup φ homφ S SisSG) x y φx∈S φy∈S = [_]and[_] {P = (λ t → t ∈ S)}  φxy=φxφy φxφy∈S
@@ -73,7 +73,7 @@ SG.Subgroup.inv-closed (preimageSubgroup φ homφ S SisSG) x φx∈S = [_]and[_]
 
 
 kernel : (φ : G → H) → 𝒫 G
-kernel φ = preimageSubset φ SH.neutSubset 
+kernel φ = preimage φ SH.neutSubset 
 
 
 kernelSubgroup : (φ : G → H) → GroupHom φ → SG.Subgroup (kernel φ)
@@ -81,9 +81,6 @@ kernelSubgroup φ homφ = preimageSubgroup φ homφ SH.neutSubset SH.neutSubgrou
 
 
 
-
-image : (φ : G → H) → 𝒫 H
-image φ = propSubset (λ b → Σ G (λ a → φ a ≡ b))
 
 open SH.closedProp
 
@@ -99,7 +96,7 @@ inv-closed (imClosed φ homφ) x (a , φa=x) = a ⁻¹₁ , (φ (a ⁻¹₁) =�
                                                      x ⁻¹₂ □=)
 
 
-image-subgroup : (φ : G → H) → GroupHom φ → SH.Subgroup (image φ)
+image-subgroup : (φ : G → H) → GroupHom φ → SH.Subgroup (wholeImage φ)
 image-subgroup φ homφ = SH.propSubgroup (λ x → Σ G (λ a → φ a ≡ x)) (imClosed φ homφ)
 
 open _⇔_
@@ -124,7 +121,7 @@ to (injective-kernel φ homφ) φinj a a∈kerφ = φinj a e₁ (φ a =⟨ a∈k
 
 
 
-surjective-image : (φ : G → H) → GroupHom φ → ((x : H) → ∥ Σ G (λ a → φ a ≡ x) ∥) ⇔ ((image φ) ⊇ wholeSet H)
+surjective-image : (φ : G → H) → GroupHom φ → ((x : H) → ∥ Σ G (λ a → φ a ≡ x) ∥) ⇔ ((wholeImage φ) ⊇ wholeSet H)
 from (surjective-image φ homφ) imφ⊇H x = imφ⊇H x tt
 to (surjective-image φ homφ) φsurj x _ = φsurj x
 
