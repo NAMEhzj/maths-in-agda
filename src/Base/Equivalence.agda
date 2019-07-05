@@ -14,8 +14,8 @@ open import Data.Nat hiding (_⊔_)
 
 
 -- I grant myself functional extensionality, makes things way easier and appearently it probably doesen't even lead to a contradiction
-postulate ∀≡ : ∀{l k} → {A : Set l} → {B : Set k} →
-               {f g : A → B} → ((x : A) → f x ≡ g x) →
+postulate ∀≡ : ∀{l k} → {A : Set l} → {B : A → Set k} →
+               {f g : (a : A) → B a} → ((x : A) → f x ≡ g x) →
                f ≡ g
 
 
@@ -150,3 +150,10 @@ subst B refl r = r
 Σ-≡-elim refl = refl , refl
 
 
+×-≡-intro : ∀{α β} {A : Set α} {B : Set β} {a a' : A} {b b' : B} →
+            a ≡ a' × b ≡ b' → (a , b) ≡ (a' , b')
+×-≡-intro (refl , refl) = refl
+
+×-≡-elim : ∀{α β} {A : Set α} {B : Set β} {a a' : A} {b b' : B} →
+           (a , b) ≡ (a' , b') → a ≡ a' × b ≡ b'
+×-≡-elim refl = refl , refl
